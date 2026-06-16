@@ -1,33 +1,31 @@
-import pickle
-import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-TASK_FILE = "tasks.bin"
+from src.task import Base, Task
 
+# This establishes the link to the SQLite database. Use SQLite and save it to tasks.db
+engine = create_engine("sqlite:///tasks.db")
+
+# Check if no database exists and if so, creates it.
+Base.metadata.create_all(engine)
+
+# Session is a factory (session maker): call Session() to get a new workspace on the DB.
+Session = sessionmaker(bind=engine)
 
 def load_tasks():
-    """
-    Load tasks from a binary file using the pickle module.
-
-    Returns:
-        list: A list of Task objects loaded from the binary file.
-              If the file does not exist, an empty list is returned.
-    """
-    if os.path.exists(TASK_FILE):
-        with open(TASK_FILE, "rb") as file:
-            return pickle.load(file)
-    return []
-
+    """Return every task from the database as a list."""
+    session = Session() # connect to db
+    tasks = session.query(Task).all() # grab all tasks in list
+    session.expunge_all()   # detach objects so they're usable after close
+    session.close()
+    return tasks
 
 def save_tasks(tasks):
-    """
-    Save a list of tasks to a binary file using the pickle module.
-
-    Args:
-        tasks (list): A list of Task objects to be saved to the file.
-
-    Side Effects:
-        - Writes the serialized task list to TASK_FILE.
-        - Overwrites the file if it already exists.
-    """
-    with open(TASK_FILE, "wb") as file:
-        pickle.dump(tasks, file)
+    """Replace all stored tasks with the given list (simple full rewrite)."""
+    session = Session()
+    session.query(Task).delete()    # clear the currently existing table
+    for task in tasks:
+        session.add(Task(task.title, task.description,
+                         task.due_date, task.status))
+    session.commit()
+    session.close()
