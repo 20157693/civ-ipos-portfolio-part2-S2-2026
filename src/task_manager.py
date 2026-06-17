@@ -62,41 +62,6 @@ def delete_task(tasks, title):
     return False
 
 
-def list_tasks(tasks, status=None):
-    """
-    Display tasks in the task list, optionally filtered by status.
-
-    Args:
-        tasks (list): The list of existing Task objects.
-        status (str, optional): The status to filter tasks
-        by (e.g., "pending" or "completed").
-
-    Returns:
-        None
-
-    Side Effects:
-        - Prints the list of tasks to the console.
-    """
-    if not status:
-        # If status is not set
-        filtered = tasks
-    else:
-        # Filter tasks based on their status
-        filtered = []
-        for task in tasks:
-            if task.status == status:
-                filtered.append(task)
-
-    if not filtered:
-        print("No tasks found.")
-        return
-    for task in filtered:
-        print(
-            f"{task.title} | {task.description} | "
-            f"Due: {task.due_date} | Status: {task.status}"
-        )
-
-
 def filter_tasks_by_status(tasks, status):
     """
     Filter tasks by their status.
@@ -109,6 +74,7 @@ def filter_tasks_by_status(tasks, status):
         list: A list of Task objects that match the specified status.
     """
     return [task for task in tasks if task.status == status]
+
 
 def format_tasks(tasks, status=None):
     """Return tasks as a formatted table string (or a 'no tasks' message)."""

@@ -1,5 +1,6 @@
 # test with
 # python -m unittest discover -s tests -v
+# python -m flake8 ./src
 import unittest
 
 from src.task_manager import format_tasks
