@@ -1,4 +1,11 @@
-class Task:
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import declarative_base
+
+# Base is the database for SQLAlchemy 
+Base = declarative_base()
+
+
+class Task(Base):
     """
     A class to represent a task in the task management application.
 
@@ -8,6 +15,15 @@ class Task:
         due_date (str): The due date of the task in 'DD-MM-YYYY' format.
         status (str): The current status of the task, defaults to 'pending'.
     """
+
+    __tablename__ = "tasks"
+
+    # Each Column becomes a column in the table.
+    id = Column(Integer, primary_key=True)
+    title = Column(String)
+    description = Column(String)
+    due_date = Column(String)
+    status = Column(String, default="pending")
 
     def __init__(self, title, description, due_date, status="pending"):
         """
